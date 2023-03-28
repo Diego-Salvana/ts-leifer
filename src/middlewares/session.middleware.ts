@@ -11,18 +11,15 @@ const checkJwt = (req: RequestExt, res: Response, next: NextFunction) => {
       //Verificar JWT. En caso de éxito devuelve el payload decodificado
       const isUser = verifyToken(`${jwt}`);
 
-      if (!isUser) {
-         res.status(401).send('NO_TIENES_UN_JWT_VÁLIDO');
-      } else {
-         //Agrego el cuerpo del payload decodificado a la Request para tener info del usuario
+      //Agrego el cuerpo del payload decodificado a la Request para tener info del usuario
+      if (typeof isUser !== 'string') {
          req.user = isUser;
-
-         next();
       }
+
+      next();
    } catch (err: any) {
       console.log(err);
-      res.status(400);
-      res.send('SESIÓN_NO_VÁLIDA');
+      res.status(401).send({ ok: false, error: 'SESIÓN_NO_VÁLIDA', message: err.message });
    }
 };
 
